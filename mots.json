@@ -3,7 +3,8 @@
     "Animaux": [
       "CHAT", "CHIEN", "LICORNE", "DRAGON", "PINGOUIN", "REQUIN",
       "GIRAFE", "ELEPHANT", "DINOSAURE", "CROCODILE", "KANGOUROU",
-      "HERISSON", "PIEUVRE", "PANDA", "FLAMANT ROSE"
+      "HERISSON", "PIEUVRE", "PANDA",
+      { "mot": "AXOLOTL", "desc": "petit amphibien rose du Mexique" }
     ],
     "Personnages": [
       "PIRATE", "ROBOT", "SORCIERE", "VAMPIRE", "FANTOME", "ZOMBIE",
@@ -12,7 +13,8 @@
     ],
     "Nourriture": [
       "BANANE", "PIZZA", "BURGER", "SUSHI", "CROISSANT", "CHOCOLAT",
-      "SPAGHETTI", "FROMAGE", "PASTEQUE", "GLACE", "TACOS", "CREPE"
+      "SPAGHETTI", "FROMAGE", "PASTEQUE", "GLACE", "TACOS", "CREPE",
+      { "mot": "RACLETTE", "desc": "le plat d'hiver au fromage fondu" }
     ]
   }
 }

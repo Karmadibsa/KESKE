@@ -91,6 +91,17 @@
       text-transform: uppercase; font-size: 100px;
     }
 
+    /* description sous le mot (optionnelle) */
+    #desc {
+      position: fixed; left: 0; right: 0; bottom: 74px;
+      display: none; z-index: 4; pointer-events: none;
+      text-align: center; padding: 0 16px;
+      font-family: Arial, sans-serif; font-weight: bold;
+      font-size: clamp(15px, 3.4vw, 24px);
+      letter-spacing: 0.02em; color: #f1c40f;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+    }
+
     /* boutons du bas */
     #actions {
       position: fixed; bottom: 0; left: 0; right: 0;
@@ -135,6 +146,7 @@
       <button id="retour">MENU</button>
     </div>
     <div id="ecran"><div id="mot"></div></div>
+    <div id="desc"></div>
     <div id="actions">
       <button class="action passe">⏭️ PASSE</button>
       <button class="action trouve">TROUVÉ ✅</button>
@@ -162,6 +174,7 @@
     var jeuEl  = document.getElementById("jeu");
     var listeThemesEl = document.getElementById("listeThemes");
     var motEl  = document.getElementById("mot");
+    var descEl = document.getElementById("desc");
     var scoreEl = document.getElementById("score");
     var nomThemeEl = document.getElementById("nomTheme");
     var flashEl = document.getElementById("flash");
@@ -178,10 +191,7 @@
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (data && data.themes && Object.keys(data.themes).length) {
-          THEMES = {};
-          for (var k in data.themes) {
-            THEMES[k] = data.themes[k].map(function (m) { return String(m).toUpperCase(); });
-          }
+          THEMES = data.themes; // gardé brut ; normalisé au moment du tirage
           localStorage.setItem(C.themes, JSON.stringify(THEMES));
           construireMenu();
         }
@@ -206,13 +216,23 @@
       listeThemesEl.appendChild(t);
     }
 
-    function motsDuTheme(nom) {
-      if (nom === "__tous__") {
-        var all = [];
-        for (var k in THEMES) all = all.concat(THEMES[k]);
-        return all;
+    // transforme une entrée (chaîne ou {mot,desc}) en objet normalisé
+    function normItem(e) {
+      if (e && typeof e === "object") {
+        return { mot: String(e.mot || "").toUpperCase(), desc: String(e.desc || "") };
       }
-      return (THEMES[nom] || []).slice();
+      return { mot: String(e).toUpperCase(), desc: "" };
+    }
+
+    function motsDuTheme(nom) {
+      var brut;
+      if (nom === "__tous__") {
+        brut = [];
+        for (var k in THEMES) brut = brut.concat(THEMES[k]);
+      } else {
+        brut = (THEMES[nom] || []).slice();
+      }
+      return brut.map(normItem);
     }
 
     // ---------- démarrage d'un thème ----------
@@ -257,14 +277,16 @@
     function motSuivant(sansScore) {
       if (!MOTS.length) return;
       if (!sac.length) sac = melanger(MOTS.slice());
-      var mot = String(sac.pop()).toUpperCase();
-      localStorage.setItem(C.mot, mot);
+      var item = normItem(sac.pop());
+      localStorage.setItem(C.mot, JSON.stringify(item));
       sauverEtat();
-      rendre(mot);
+      rendre(item);
     }
 
     // ---------- affichage + mise à l'échelle paysage ----------
-    function rendre(mot) {
+    function rendre(item) {
+      item = normItem(item);
+      var mot = item.mot;
       motEl.innerHTML = "";
       motEl.style.transform = "scale(1)";
       for (var k = 0; k < mot.length; k++) {
@@ -273,14 +295,19 @@
         d.textContent = mot[k];
         motEl.appendChild(d);
       }
+      // description sous le mot (si présente)
+      descEl.textContent = item.desc || "";
+      descEl.style.display = item.desc ? "block" : "none";
       ajuster();
     }
     function ajuster() {
       motEl.style.transform = "scale(1)";
       var w = motEl.offsetWidth, h = motEl.offsetHeight;
       if (!w || !h) return;
+      var avecDesc = descEl.style.display === "block";
       var dispoW = window.innerWidth  * 0.90;
-      var dispoH = window.innerHeight * 0.72; // marge pour barre + boutons
+      // marge pour barre + boutons, + plus de place si une description s'affiche
+      var dispoH = window.innerHeight * (avecDesc ? 0.58 : 0.72);
       var scale = Math.min(dispoW / w, dispoH / h);
       motEl.style.transform = "scale(" + scale + ")";
     }
@@ -322,7 +349,13 @@
       total = parseInt(localStorage.getItem(C.total) || "0", 10) || 0;
       ouvrirJeu();
       var m = localStorage.getItem(C.mot);
-      if (m) rendre(m); else motSuivant();
+      if (m) {
+        var it;
+        try { it = JSON.parse(m); } catch (e) { it = null; }
+        rendre(it && typeof it === "object" ? it : { mot: String(m), desc: "" });
+      } else {
+        motSuivant();
+      }
     })();
 
     // ---------- écran allumé ----------
