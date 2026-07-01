@@ -1,20 +1,52 @@
 {
   "themes": {
     "Animaux": [
-      "CHAT", "CHIEN", "LICORNE", "DRAGON", "PINGOUIN", "REQUIN",
-      "GIRAFE", "ELEPHANT", "DINOSAURE", "CROCODILE", "KANGOUROU",
-      "HERISSON", "PIEUVRE", "PANDA",
+      { "mot": "CHAT", "desc": "il ronronne et fait miaou" },
+      { "mot": "CHIEN", "desc": "le meilleur ami de l'homme" },
+      { "mot": "LICORNE", "desc": "cheval magique à corne" },
+      { "mot": "DRAGON", "desc": "crache du feu, a des ailes" },
+      { "mot": "PINGOUIN", "desc": "oiseau noir et blanc de la banquise" },
+      { "mot": "REQUIN", "desc": "prédateur des mers, grosses dents" },
+      { "mot": "GIRAFE", "desc": "très long cou, taches" },
+      { "mot": "ELEPHANT", "desc": "grosses oreilles et une trompe" },
+      { "mot": "DINOSAURE", "desc": "reptile géant disparu" },
+      { "mot": "CROCODILE", "desc": "reptile des rivières, grande gueule" },
+      { "mot": "KANGOUROU", "desc": "saute avec une poche, Australie" },
+      { "mot": "HERISSON", "desc": "petit animal couvert de piquants" },
+      { "mot": "PIEUVRE", "desc": "huit tentacules dans l'océan" },
+      { "mot": "PANDA", "desc": "ours noir et blanc mangeur de bambou" },
       { "mot": "AXOLOTL", "desc": "petit amphibien rose du Mexique" }
     ],
     "Personnages": [
-      "PIRATE", "ROBOT", "SORCIERE", "VAMPIRE", "FANTOME", "ZOMBIE",
-      "NINJA", "COWBOY", "ASTRONAUTE", "CHEVALIER", "SUPER-HEROS",
-      "CLOWN", "MAGICIEN", "DETECTIVE"
+      { "mot": "PIRATE", "desc": "cherche un trésor sur les mers" },
+      { "mot": "ROBOT", "desc": "machine humanoïde en métal" },
+      { "mot": "SORCIERE", "desc": "chapeau pointu et balai" },
+      { "mot": "VAMPIRE", "desc": "boit du sang, craint l'ail" },
+      { "mot": "FANTOME", "desc": "esprit blanc qui fait bouh" },
+      { "mot": "ZOMBIE", "desc": "mort-vivant qui marche lentement" },
+      { "mot": "NINJA", "desc": "guerrier furtif japonais" },
+      { "mot": "COWBOY", "desc": "chapeau, lasso et Far West" },
+      { "mot": "ASTRONAUTE", "desc": "voyage dans l'espace" },
+      { "mot": "CHEVALIER", "desc": "armure et épée au Moyen Âge" },
+      { "mot": "SUPER-HEROS", "desc": "cape et super-pouvoirs" },
+      { "mot": "CLOWN", "desc": "nez rouge, fait rire au cirque" },
+      { "mot": "MAGICIEN", "desc": "sort des lapins du chapeau" },
+      { "mot": "DETECTIVE", "desc": "résout des enquêtes, loupe" }
     ],
     "Nourriture": [
-      "BANANE", "PIZZA", "BURGER", "SUSHI", "CROISSANT", "CHOCOLAT",
-      "SPAGHETTI", "FROMAGE", "PASTEQUE", "GLACE", "TACOS", "CREPE",
-      { "mot": "RACLETTE", "desc": "le plat d'hiver au fromage fondu" }
+      { "mot": "BANANE", "desc": "fruit jaune et courbé" },
+      { "mot": "PIZZA", "desc": "ronde, tomate et fromage" },
+      { "mot": "BURGER", "desc": "steak entre deux pains" },
+      { "mot": "SUSHI", "desc": "riz et poisson cru, Japon" },
+      { "mot": "CROISSANT", "desc": "viennoiserie du petit-déj" },
+      { "mot": "CHOCOLAT", "desc": "douceur brune et sucrée" },
+      { "mot": "SPAGHETTI", "desc": "pâtes longues italiennes" },
+      { "mot": "FROMAGE", "desc": "fait avec du lait, ça sent fort" },
+      { "mot": "PASTEQUE", "desc": "gros fruit rouge de l'été" },
+      { "mot": "GLACE", "desc": "dessert froid en cornet" },
+      { "mot": "TACOS", "desc": "galette garnie mexicaine" },
+      { "mot": "CREPE", "desc": "fine et plate, sucrée ou salée" },
+      { "mot": "RACLETTE", "desc": "fromage fondu de l'hiver" }
     ]
   }
 }
