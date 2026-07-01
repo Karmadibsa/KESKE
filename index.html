@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000000">
+  <title>KESKÉ ?</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+      font-family: "Arial Black", Arial, sans-serif;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+    }
+
+    .cache { display: none !important; }
+
+    /* ---------------- MENU ---------------- */
+    #menu {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 24px;
+      overflow-y: auto;
+    }
+    #menu h1 {
+      font-size: clamp(28px, 8vw, 54px);
+      letter-spacing: 0.06em;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    #menu .sous { color: #888; font-family: Arial, sans-serif; font-size: 15px; font-weight: bold; letter-spacing: .1em; margin-bottom: 14px; text-align:center;}
+    .themes { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; max-width: 720px; }
+    .btn-theme {
+      background: #fff; color: #000;
+      border: none; border-radius: 16px;
+      padding: 20px 30px;
+      font-family: "Arial Black", Arial, sans-serif;
+      font-size: clamp(18px, 5vw, 26px);
+      font-weight: 900; letter-spacing: .03em;
+      cursor: pointer; text-transform: uppercase;
+      transition: transform .08s ease;
+    }
+    .btn-theme:active { transform: scale(0.95); }
+    .btn-theme.tous { background: #2ecc71; }
+
+    /* ---------------- JEU ---------------- */
+    #jeu { position: fixed; inset: 0; display: none; }
+
+    #barre {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px;
+      font-family: Arial, sans-serif; z-index: 5;
+      pointer-events: none;
+    }
+    #score {
+      font-size: 22px; font-weight: 900; letter-spacing: .05em;
+      color: #2ecc71;
+    }
+    #nomTheme { color:#777; font-size: 14px; font-weight:bold; letter-spacing:.1em; text-transform:uppercase;}
+    #retour {
+      pointer-events: auto;
+      background: transparent; border: 2px solid #444; color: #999;
+      border-radius: 10px; padding: 8px 12px; font-weight: bold;
+      font-size: 14px; cursor: pointer;
+    }
+
+    #ecran {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    #mot {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      line-height: 0.95; transform-origin: center center; will-change: transform;
+    }
+    .lettre {
+      color: #fff; font-weight: 900; letter-spacing: 0.04em;
+      text-transform: uppercase; font-size: 100px;
+    }
+
+    /* boutons du bas */
+    #actions {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      display: flex; z-index: 5;
+    }
+    .action {
+      flex: 1; border: none; cursor: pointer;
+      font-family: "Arial Black", Arial, sans-serif; font-weight: 900;
+      font-size: clamp(16px, 4vw, 22px); letter-spacing: .05em;
+      padding: 18px 8px; text-transform: uppercase; color: #fff;
+      opacity: .85;
+    }
+    .action.passe   { background: #c0392b; }
+    .action.trouve  { background: #219a52; }
+    .action:active  { opacity: 1; }
+
+    /* flash retour visuel */
+    #flash {
+      position: fixed; inset: 0; z-index: 8; pointer-events: none;
+      opacity: 0; transition: opacity .18s ease;
+    }
+    #flash.on { opacity: .55; }
+    #flash.vert  { background: #2ecc71; }
+    #flash.rouge { background: #e74c3c; }
+  </style>
+</head>
+<body>
+
+  <!-- MENU -->
+  <div id="menu">
+    <h1>KESKÉ ?</h1>
+    <div class="sous">CHOISIS UN THÈME</div>
+    <div class="themes" id="listeThemes"></div>
+  </div>
+
+  <!-- JEU -->
+  <div id="jeu">
+    <div id="flash"></div>
+    <div id="barre">
+      <div id="score">✓ 0</div>
+      <div id="nomTheme"></div>
+      <button id="retour">MENU</button>
+    </div>
+    <div id="ecran"><div id="mot"></div></div>
+    <div id="actions">
+      <button class="action passe">⏭️ PASSE</button>
+      <button class="action trouve">TROUVÉ ✅</button>
+    </div>
+  </div>
+
+  <script>
+    // ---------- thèmes de secours (si mots.json non chargeable) ----------
+    var THEMES_DEFAUT = {
+      "Animaux": ["CHAT","CHIEN","LICORNE","DRAGON","PINGOUIN","REQUIN","GIRAFE","ELEPHANT","DINOSAURE","PANDA"],
+      "Personnages": ["PIRATE","ROBOT","SORCIERE","VAMPIRE","FANTOME","ZOMBIE","NINJA","COWBOY","ASTRONAUTE","CLOWN"],
+      "Nourriture": ["BANANE","PIZZA","BURGER","SUSHI","CROISSANT","CHOCOLAT","FROMAGE","GLACE","TACOS","CREPE"]
+    };
+
+    var C = {
+      themes: "dt_themes", theme: "dt_theme_actuel", mots: "dt_mots",
+      sac: "dt_sac", mot: "dt_mot", score: "dt_score", total: "dt_total"
+    };
+
+    var THEMES = {};
+    var MOTS = [], sac = [], score = 0, total = 0, themeActuel = null;
+
+    // éléments
+    var menuEl = document.getElementById("menu");
+    var jeuEl  = document.getElementById("jeu");
+    var listeThemesEl = document.getElementById("listeThemes");
+    var motEl  = document.getElementById("mot");
+    var scoreEl = document.getElementById("score");
+    var nomThemeEl = document.getElementById("nomTheme");
+    var flashEl = document.getElementById("flash");
+
+    // ---------- charge les thèmes (cache -> puis mots.json) ----------
+    try {
+      var tc = JSON.parse(localStorage.getItem(C.themes) || "null");
+      if (tc && Object.keys(tc).length) THEMES = tc;
+    } catch (e) {}
+    if (!Object.keys(THEMES).length) THEMES = THEMES_DEFAUT;
+    construireMenu();
+
+    fetch("mots.json", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data && data.themes && Object.keys(data.themes).length) {
+          THEMES = {};
+          for (var k in data.themes) {
+            THEMES[k] = data.themes[k].map(function (m) { return String(m).toUpperCase(); });
+          }
+          localStorage.setItem(C.themes, JSON.stringify(THEMES));
+          construireMenu();
+        }
+      })
+      .catch(function () {});
+
+    function construireMenu() {
+      listeThemesEl.innerHTML = "";
+      for (var nom in THEMES) {
+        (function (n) {
+          var b = document.createElement("button");
+          b.className = "btn-theme";
+          b.textContent = n;
+          b.addEventListener("click", function () { lancerTheme(n); });
+          listeThemesEl.appendChild(b);
+        })(nom);
+      }
+      var t = document.createElement("button");
+      t.className = "btn-theme tous";
+      t.textContent = "TOUS";
+      t.addEventListener("click", function () { lancerTheme("__tous__"); });
+      listeThemesEl.appendChild(t);
+    }
+
+    function motsDuTheme(nom) {
+      if (nom === "__tous__") {
+        var all = [];
+        for (var k in THEMES) all = all.concat(THEMES[k]);
+        return all;
+      }
+      return (THEMES[nom] || []).slice();
+    }
+
+    // ---------- démarrage d'un thème ----------
+    function lancerTheme(nom) {
+      themeActuel = nom;
+      MOTS = motsDuTheme(nom);
+      sac = [];
+      score = 0; total = 0;
+      sauverEtat();
+      localStorage.setItem(C.theme, nom);
+      localStorage.setItem(C.mots, JSON.stringify(MOTS));
+      localStorage.removeItem(C.mot);
+      ouvrirJeu();
+      motSuivant(true);
+    }
+
+    function ouvrirJeu() {
+      menuEl.classList.add("cache");
+      jeuEl.style.display = "block";
+      nomThemeEl.textContent = (themeActuel === "__tous__") ? "TOUS" : themeActuel;
+      majScore();
+      garderEveille();
+      passerPleinEcran();
+    }
+
+    function ouvrirMenu() {
+      jeuEl.style.display = "none";
+      menuEl.classList.remove("cache");
+      localStorage.removeItem(C.theme);
+      localStorage.removeItem(C.mot);
+    }
+
+    // ---------- sac mélangé (anti-répétition) ----------
+    function melanger(a) {
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+
+    function motSuivant(sansScore) {
+      if (!MOTS.length) return;
+      if (!sac.length) sac = melanger(MOTS.slice());
+      var mot = String(sac.pop()).toUpperCase();
+      localStorage.setItem(C.mot, mot);
+      sauverEtat();
+      rendre(mot);
+    }
+
+    // ---------- affichage + mise à l'échelle paysage ----------
+    function rendre(mot) {
+      motEl.innerHTML = "";
+      motEl.style.transform = "scale(1)";
+      for (var k = 0; k < mot.length; k++) {
+        var d = document.createElement("div");
+        d.className = "lettre";
+        d.textContent = mot[k];
+        motEl.appendChild(d);
+      }
+      ajuster();
+    }
+    function ajuster() {
+      motEl.style.transform = "scale(1)";
+      var w = motEl.offsetWidth, h = motEl.offsetHeight;
+      if (!w || !h) return;
+      var dispoW = window.innerWidth  * 0.90;
+      var dispoH = window.innerHeight * 0.72; // marge pour barre + boutons
+      var scale = Math.min(dispoW / w, dispoH / h);
+      motEl.style.transform = "scale(" + scale + ")";
+    }
+
+    // ---------- actions : trouvé / passé ----------
+    function trouve() { score++; total++; majScore(); flash("vert");  vibrer(30);  motSuivant(); }
+    function passe()  {          total++; majScore(); flash("rouge"); vibrer([15,40,15]); motSuivant(); }
+
+    function majScore() {
+      scoreEl.textContent = "✓ " + score;
+      sauverEtat();
+    }
+    function flash(couleur) {
+      flashEl.className = ""; // reset
+      void flashEl.offsetWidth;
+      flashEl.className = couleur + " on";
+      setTimeout(function () { flashEl.className = couleur; }, 180);
+    }
+    function vibrer(p) { if (navigator.vibrate) navigator.vibrate(p); }
+
+    // ---------- persistance ----------
+    function sauverEtat() {
+      try {
+        localStorage.setItem(C.sac, JSON.stringify(sac));
+        localStorage.setItem(C.score, score);
+        localStorage.setItem(C.total, total);
+      } catch (e) {}
+    }
+
+    // ---------- restauration après refresh ----------
+    (function restaurer() {
+      var t = localStorage.getItem(C.theme);
+      if (!t) return; // on reste au menu
+      themeActuel = t;
+      try { MOTS = JSON.parse(localStorage.getItem(C.mots) || "[]"); } catch (e) { MOTS = []; }
+      if (!MOTS.length) MOTS = motsDuTheme(t);
+      try { sac = JSON.parse(localStorage.getItem(C.sac) || "[]") || []; } catch (e) { sac = []; }
+      score = parseInt(localStorage.getItem(C.score) || "0", 10) || 0;
+      total = parseInt(localStorage.getItem(C.total) || "0", 10) || 0;
+      ouvrirJeu();
+      var m = localStorage.getItem(C.mot);
+      if (m) rendre(m); else motSuivant();
+    })();
+
+    // ---------- écran allumé ----------
+    var wl = null;
+    function garderEveille() {
+      if (!("wakeLock" in navigator) || wl) return;
+      navigator.wakeLock.request("screen").then(function (l) {
+        wl = l; l.addEventListener("release", function () { wl = null; });
+      }).catch(function () {});
+    }
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "visible") garderEveille();
+    });
+
+    // ---------- plein écran + paysage ----------
+    function passerPleinEcran() {
+      var el = document.documentElement;
+      if (!document.fullscreenElement && el.requestFullscreen) {
+        el.requestFullscreen().then(function () {
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock("landscape").catch(function () {});
+          }
+        }).catch(function () {});
+      }
+    }
+
+    // ---------- boutons ----------
+    document.querySelector(".action.trouve").addEventListener("click", trouve);
+    document.querySelector(".action.passe").addEventListener("click", passe);
+    document.getElementById("retour").addEventListener("click", ouvrirMenu);
+
+    // ---------- swipe ----------
+    var x0 = null, y0 = null;
+    var zone = document.getElementById("ecran");
+    zone.addEventListener("touchstart", function (e) {
+      x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+    }, { passive: true });
+    zone.addEventListener("touchend", function (e) {
+      if (x0 === null) return;
+      var dx = e.changedTouches[0].clientX - x0;
+      var dy = e.changedTouches[0].clientY - y0;
+      x0 = y0 = null;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0) trouve(); else passe();
+      }
+    }, { passive: true });
+
+    // ---------- clavier (pour tester au PC) ----------
+    document.addEventListener("keydown", function (e) {
+      if (jeuEl.style.display !== "block") return;
+      if (e.code === "ArrowRight") { e.preventDefault(); trouve(); }
+      if (e.code === "ArrowLeft")  { e.preventDefault(); passe(); }
+      if (e.code === "Escape")     { ouvrirMenu(); }
+    });
+
+    // ---------- resize / rotation ----------
+    window.addEventListener("resize", ajuster);
+    window.addEventListener("orientationchange", function () { setTimeout(ajuster, 200); });
+  </script>
+</body>
+</html>

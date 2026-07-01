@@ -1,0 +1,18 @@
+{
+  "themes": {
+    "Animaux": [
+      "CHAT", "CHIEN", "LICORNE", "DRAGON", "PINGOUIN", "REQUIN",
+      "GIRAFE", "ELEPHANT", "DINOSAURE", "CROCODILE", "KANGOUROU",
+      "HERISSON", "PIEUVRE", "PANDA", "FLAMANT ROSE"
+    ],
+    "Personnages": [
+      "PIRATE", "ROBOT", "SORCIERE", "VAMPIRE", "FANTOME", "ZOMBIE",
+      "NINJA", "COWBOY", "ASTRONAUTE", "CHEVALIER", "SUPER-HEROS",
+      "CLOWN", "MAGICIEN", "DETECTIVE"
+    ],
+    "Nourriture": [
+      "BANANE", "PIZZA", "BURGER", "SUSHI", "CROISSANT", "CHOCOLAT",
+      "SPAGHETTI", "FROMAGE", "PASTEQUE", "GLACE", "TACOS", "CREPE"
+    ]
+  }
+}
