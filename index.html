@@ -142,23 +142,27 @@
       text-shadow: 0 2px 12px rgba(0,0,0,0.7);
     }
 
-    /* boutons bas */
+    /* petites icônes discrètes (bas) */
     #actions {
-      position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
-      display: flex; gap: 10px;
-      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      position: fixed; left: 0; right: 0; z-index: 6;
+      bottom: calc(14px + env(safe-area-inset-bottom));
+      display: flex; justify-content: center; gap: 28px;
     }
     .action {
-      flex: 1; border: none; cursor: pointer; color: #fff;
-      font-family: var(--ui); font-weight: 800; text-transform: uppercase;
-      font-size: clamp(15px, 3.6vw, 19px); letter-spacing: .06em;
-      padding: 16px 8px; border-radius: 16px;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: transform .08s ease, filter .15s;
+      width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(6px);
+      transition: transform .08s ease, background .15s, border-color .15s;
     }
-    .action:active { transform: translateY(2px); filter: brightness(1.1); }
-    .action.passe  { background: linear-gradient(180deg, #ff6673, var(--rouge)); }
-    .action.trouve { background: linear-gradient(180deg, #2ee6a0, var(--vert)); }
+    .action svg { width: 24px; height: 24px; }
+    .action:active { transform: scale(0.9); }
+    .action.passe  { color: var(--rouge); }
+    .action.trouve { color: var(--vert); }
+    .action.passe:hover  { border-color: rgba(255,77,94,0.5);  background: rgba(255,77,94,0.10); }
+    .action.trouve:hover { border-color: rgba(22,196,127,0.5); background: rgba(22,196,127,0.10); }
 
     /* flash */
     #flash {
@@ -195,8 +199,12 @@
       </div>
     </div>
     <footer id="actions">
-      <button class="action passe">⏭️ Passe</button>
-      <button class="action trouve">Trouvé ✅</button>
+      <button class="action passe" aria-label="Passe">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <button class="action trouve" aria-label="Trouvé">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </button>
     </footer>
   </div>
 
