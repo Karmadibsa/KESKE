@@ -353,16 +353,27 @@
       descEl.style.display = item.desc ? "block" : "none";
       ajuster();
     }
+    // tactile (mobile/tablette) => on penche le mot à 90° ; souris (PC) => normal
+    function estTactile() {
+      return window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+    }
+
     function ajuster() {
       // mesure à l'état naturel (sans transform)
       rotorEl.style.transform = "none";
       var w = rotorEl.offsetWidth, h = rotorEl.offsetHeight;
       if (!w || !h) return;
-      // après rotation 90°, largeur écran <- h, hauteur écran <- w
       var availW = window.innerWidth  * 0.94;
       var availH = Math.max(window.innerHeight - 150, window.innerHeight * 0.55);
-      var scale = Math.min(availW / h, availH / w);
-      rotorEl.style.transform = "rotate(90deg) scale(" + scale + ")";
+      if (estTactile()) {
+        // pivoté 90° : largeur écran <- h, hauteur écran <- w
+        var s = Math.min(availW / h, availH / w);
+        rotorEl.style.transform = "rotate(90deg) scale(" + s + ")";
+      } else {
+        // horizontal normal
+        var s2 = Math.min(availW / w, availH / h);
+        rotorEl.style.transform = "scale(" + s2 + ")";
+      }
     }
 
     // ---------- actions ----------
