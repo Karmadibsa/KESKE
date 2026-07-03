@@ -426,9 +426,10 @@
       descEl.style.display = item.desc ? "block" : "none";
       ajuster();
     }
-    // tactile (mobile/tablette) => mot penché à 90° ; souris (PC) => horizontal
-    function estTactile() {
-      return window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+    // portrait (écran plus haut que large) => mot pivoté 90° pour rester gros ;
+    // paysage (plus large que haut, PC ou tel couché) => mot horizontal normal
+    function estPortrait() {
+      return window.innerHeight > window.innerWidth;
     }
     function ajuster() {
       rotorEl.style.transform = "none";
@@ -436,7 +437,7 @@
       if (!w || !h) return;
       var availW = window.innerWidth  * 0.94;
       var availH = Math.max(window.innerHeight - 150, window.innerHeight * 0.55);
-      if (estTactile()) {
+      if (estPortrait()) {
         var s = Math.min(availW / h, availH / w);
         rotorEl.style.transform = "rotate(90deg) scale(" + s + ")";
       } else {
