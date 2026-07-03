@@ -222,9 +222,31 @@
   <script>
     // ---------- thèmes de secours (si mots.json non chargeable) ----------
     var THEMES_DEFAUT = {
-      "Cousinade": ["MULAN","SHREK","HULK","VOLDEMORT","TINTIN","OBÉLIX","SIMBA","JÉSUS","TRUMP","GORILLE","LAPIN","ÉLÉPHANT","TORTUE","BOURDON"],
-      "Animaux": ["CHAT","CHIEN","LICORNE","DRAGON","PINGOUIN","REQUIN","GIRAFE","LION","TIGRE","LOUP","RENARD","OURS","SINGE","DAUPHIN"],
-      "Nourriture & Boissons": ["PIZZA","BURGER","SUSHI","CROISSANT","CHOCOLAT","FROMAGE","GLACE","TACOS","CRÊPE","FRITES","KEBAB","CAFÉ"]
+      "Cousinade": [
+        { mot: "Shrek", desc: "ogre vert qui aime sa boue" },
+        { mot: "Voldemort", desc: "celui-dont-on-ne-dit-pas-le-nom (oups)" },
+        { mot: "Obélix", desc: "tombé dans la marmite, pas gros du tout" },
+        { mot: "Simba", desc: "futur roi, un peu en retard" },
+        { mot: "Jésus", desc: "transforme l'eau en vin, roi de l'apéro" },
+        { mot: "Gorille", desc: "costaud poilu qui tape son torse" },
+        { mot: "Éléphant", desc: "trompe énorme, mémoire d'éléphant" },
+        { mot: "Bourdon", desc: "grosse abeille jamais pressée" }
+      ],
+      "Animaux": [
+        { mot: "Chat", desc: "il t'ignore avec classe" },
+        { mot: "Licorne", desc: "cheval magique à corne arc-en-ciel" },
+        { mot: "Pingouin", desc: "en smoking sur la banquise" },
+        { mot: "Girafe", desc: "le cou pour choper le wifi" },
+        { mot: "Lion", desc: "le roi qui dort 20h par jour" },
+        { mot: "Escargot", desc: "il déménage avec sa maison" }
+      ],
+      "Nourriture & Boissons": [
+        { mot: "Pizza", desc: "jamais assez de fromage" },
+        { mot: "Fromage", desc: "ça sent fort mais c'est bon" },
+        { mot: "Glace", desc: "fond plus vite que ton self-control" },
+        { mot: "Frites", desc: "dorées, jamais assez nombreuses" },
+        { mot: "Café", desc: "le carburant du matin" }
+      ]
     };
 
     var C = {
